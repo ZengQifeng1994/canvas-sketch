@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>canvas</title>
+		<meta name='viewport' content='width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0'/>
+		<link href='./css/bootstrap.min.4.3.1.css' rel='stylesheet' />
+		<link href='./css/ion.rangeSlider.min.2.3.0.css' rel='stylesheet' />
+		<link href='./css/nano.min.1.2.2.css' rel='stylesheet' />
+		<link href='./css/index.css' rel='stylesheet' />
+	</head>
+	<body>
+		<div class='pickr-container'></div>
+		<button type="button" class="btn btn-info" id="eraser"> <span class="sr-only">Toggle Dropdown</span></span>&nbsp;&nbsp;&nbsp;橡皮擦&nbsp;&nbsp;&nbsp;</button>
+		<div class="range">
+			<input type="text" class="js-range-slider" name="my_range" value="" />
+		</div>
+		<canvas id="myCanvas" width="1000" height="550"></canvas>
+		<canvas id="myCanvas2" width="1000" height="550"></canvas>
+
+		<script src='./js/jquery.min.3.4.1.js'></script>
+		<script src='./js/bootstrap.min.4.3.1.js'></script>
+        <script src='./js/ion.rangeSlider.min.2.3.0.js'></script>
+        <script src='./js/pickr.es5.min.1.2.2.js'></script>
+        <script src='./js/index.js'></script>
+		<script type='text/javascript'>
+            const pickrContainer = document.querySelector('.pickr-container')
+            let pickrInstance = null
+            const el = document.createElement('p')
+            const config = {
+                swatches: [
+                    'rgba(244, 67, 54, 1)',
+                    'rgba(233, 30, 99, 0.95)',
+                    'rgba(156, 39, 176, 0.9)',
+                    'rgba(103, 58, 183, 0.85)',
+                    'rgba(63, 81, 181, 0.8)',
+                    'rgba(33, 150, 243, 0.75)',
+                    'rgba(3, 169, 244, 0.7)'
+                ],
+                defaultRepresentation: 'HEXA',
+                components: {
+                    preview: true,
+                    opacity: true,
+                    hue: true,
+                    interaction: {
+                        hex: false,
+                        rgba: false,
+                        hsva: false,
+                        input: true,
+                        clear: false,
+                        save: true
+                    }
+                }
+            }
+            const theme = 'nano'
+
+            pickrContainer.appendChild(el)
+            pickrInstance = new Pickr(Object.assign({el, theme, default: '#42445A'}, config))
+            pickrInstance.on('save', (color, instance) => {
+                let RGBACol = 'rgba(' + color.toRGBA().join(',') + ')'            
+                tool.color = RGBACol
+                tool.disk = RGBACol
+                $('#eraser').removeClass('active')
+            })
+        </script>
+        <script type="text/javascript">
+        	$(".js-range-slider").ionRangeSlider({
+		        skin: "round",
+		        min: 5,
+		        max: 100,
+		        from: 20,
+		        step: 5
+		    })
+		    $(".js-range-slider").on("change", function () {
+				let val = $(this).prop("value");
+				tool.radius = val
+				$('#myCanvas2').css('cursor', 'url(img/' + tool.radius + '.png) ' + tool.radius/2 + ' ' + tool.radius/2 + ', auto')
+			})
+        </script>
+        <script type="text/javascript">
+			function overscroll(el) {
+				if (!el) {
+					return false
+				}
+				el.addEventListener('touchstart', function() {
+					let top = el.scrollTop, totalScroll = el.scrollHeight, currentScroll = top + el.offsetHeight
+					if (top === 0) {
+						el.scrollTop = 1
+					} else if (currentScroll === totalScroll) {
+						el.scrollTop = top - 1
+					}
+				})
+				el.addEventListener('touchmove', function(evt) {
+					if (el.offsetHeight < el.scrollHeight)
+					evt._isScroller = true
+				})
+			}
+			overscroll(document.querySelector('.scroll'))
+			document.body.addEventListener('touchmove', function(evt) {
+				if (!evt._isScroller) {
+					evt.preventDefault()
+				}
+			})
+		</script>
+	</body>
+</html>
